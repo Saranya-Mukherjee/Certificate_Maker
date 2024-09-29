@@ -4,13 +4,14 @@ import colours
 
 img = cv2.imread("1st_ref.png", cv2.IMREAD_COLOR)
 certif = cv2.imread("1st.png", cv2.IMREAD_COLOR)
-certif = cv2.resize(certif, (0, 0), fx=0.5, fy=0.5)
+# certif = cv2.resize(certif, (0, 0), fx=0.5, fy=0.5)
 certificate = cv2.imread("1st.png", cv2.IMREAD_COLOR)
-certificate = cv2.resize(certificate, (0, 0), fx=0.5, fy=0.5)
-img = cv2.resize(img, (0, 0), fx=0.5, fy=0.5)
+# certificate = cv2.resize(certificate, (0, 0), fx=0.5, fy=0.5)
+# img = cv2.resize(img, (0, 0), fx=0.5, fy=0.5)
 hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
 
 height, width, _ = certif.shape
+width_box = width
 print('width:  ', width)
 print('height: ', height)
 
@@ -19,7 +20,7 @@ def text_contour(x, y, w, h, col, scale, text):
     blank = 255 * np.ones_like(certif, dtype=np.uint8)
     blank_cp = 255 * np.ones_like(certif, dtype=np.uint8)
     font = cv2.FONT_HERSHEY_SIMPLEX
-    org = (x + w // 2, int(y + h / 1))
+    org = (x + w // 2, int(y + h / 1.2))
     fontScale = scale
     color = (0, 0, 0)
     thickness = 2
@@ -54,13 +55,14 @@ def text_contour(x, y, w, h, col, scale, text):
     return text, blank_cp
 
 def center_test(x,y,w,h,col,scale, text_in):
-    text, _ = text_contour(x, y, w, h, col=255, scale=1, text = text_in)
+    text, _ = text_contour(x, y, w, h, col=col, scale=scale, text = text_in)
     x,y,w,h = x,y,w,h
-    diff = width
+    diff = width_box
+    print("ok",width_box, width//2)
     counter = 0
     while abs(diff)>10:
         center_text = [(text[0] + text[2]) // 2, (text[1] + text[3]) // 2]
-        diff = (width // 2) - center_text[0]
+        diff = width_box - center_text[0]
         print(center_text, diff)
         x, y, w, h = x, y, w + diff * 2, h
         text, _ = text_contour(x, y, w, h, col = col, scale= scale, text = text_in)
@@ -70,12 +72,13 @@ def center_test(x,y,w,h,col,scale, text_in):
     return x,y,w,h,diff
 
 def do_all_the_fucking_work(name):
+    global width_box
     img = cv2.imread("1st_ref.png", cv2.IMREAD_COLOR)
     certif = cv2.imread("1st.png", cv2.IMREAD_COLOR)
-    certif = cv2.resize(certif, (0, 0), fx=0.5, fy=0.5)
+    # certif = cv2.resize(certif, (0, 0), fx=0.5, fy=0.5)
     certificate = cv2.imread("1st.png", cv2.IMREAD_COLOR)
-    certificate = cv2.resize(certificate, (0, 0), fx=0.5, fy=0.5)
-    img = cv2.resize(img, (0, 0), fx=0.5, fy=0.5)
+    # certificate = cv2.resize(certificate, (0, 0), fx=0.5, fy=0.5)
+    # img = cv2.resize(img, (0, 0), fx=0.5, fy=0.5)
     hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
     mask = cv2.inRange(hsv, colours.c1, colours.c2)
 
@@ -90,6 +93,8 @@ def do_all_the_fucking_work(name):
         x, y, w, h = cv2.boundingRect(contour)
         if w * h < 50:
             continue
+        width_box = x+w//2
+        print("hu", x, w, width_box)
         cv2.rectangle(certif, (x, y), (x + w, y + h), (150, 150, 150), 2)
         text, _ = text_contour(x, y, w, h, col=0, scale=1, text = name)
 

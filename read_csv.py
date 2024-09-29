@@ -7,6 +7,8 @@ x = df.iloc[:].values
 
 for data in x:
     d = data[0]
+    d = d.lower()
+    d = d.title()
     print(d)
     certificate = find_start.do_all_the_fucking_work(d)
     cv2.imwrite("results/"+d+".jpg",certificate)
