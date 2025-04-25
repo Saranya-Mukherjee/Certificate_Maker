@@ -1,4 +1,4 @@
-change names in the names.csv file
+Change names in the names.csv file
 
 format:
 NAMES
@@ -7,19 +7,19 @@ name2
 name3
 ....
 
-While adding lots of names into the same certificate, seperate them with a comma (',')
+While adding lots of names into the same certificate, separate them with a comma (',')
 
-the results will be in the 'results' folder.
+The results will be in the 'results' folder.
 
-prequisites: python, open cv(cv2), numpy, pandas
+prequisites: python, open cv(cv2), numpy, pandas, tesseract OCR 
 
 Steps:
 1. Base certificate is loaded in '1st.png'
-2. The part where the name is supposed to go is painted the colour, #FF00FF (RGB)
+2. The part where the name is supposed to go is painted the colour #FF00FF (RGB)
 3. Put names in the names.csv file
 4. Get results
 
-(More automation and a GUI will be added after the base functionality is properly working)
+(More automation and a GUI will be added after the base functionality is working properly)
 
 To be added:
-1. Probability analysis of output to be flagged for user to check for errors
+1. Probability analysis of output to be flagged for a user to check for errors
