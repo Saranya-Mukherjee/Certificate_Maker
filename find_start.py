@@ -20,7 +20,7 @@ def text_contour(x, y, w, h, col, scale, text):
     # centering the text in the rectangle
     blank = 255 * np.ones_like(certif, dtype=np.uint8)
     blank_cp = 255 * np.ones_like(certif, dtype=np.uint8)
-    font = cv2.FONT_HERSHEY_TRIPLEX
+    font = cv2.FONT_HERSHEY_SIMPLEX
     org = (x + w // 2, int(y + h / 1.2))
     fontScale = scale
     color = (0, 0, 0)
@@ -135,7 +135,7 @@ def get_precent_match(base, to_cpr):
     l2 = len(to_cpr)
     if l == 0 or l2 == 0:
         return 0
-    if 0.7 < l2/l < 1.3:
+    if 0.9 < l2/l < 1.3:
         pass
     else:
         return 0
@@ -191,4 +191,4 @@ def do_the_fucking_ai_type_shit(name, scale_start, step, max_limit):
             flipped = True
         scale += dir * step
     print("SCALE FINAL", scale)
-    return certificate_last
+    return certificate_last, scale

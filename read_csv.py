@@ -12,6 +12,8 @@ MAX_RECURSION_LIMIT = 50
 SCALE_START = 1
 STEP = 0.05 # adjust to get the needed speed or accuracy
 
+list_of_final_scales = []
+
 for data in x:
     no += 1
     print("===================", no, "OUT OF", total, "===================")
@@ -21,5 +23,6 @@ for data in x:
     d = d.title()
     print(d)
 
-    certificate = find_start.do_the_fucking_ai_type_shit(d,SCALE_START, STEP, MAX_RECURSION_LIMIT)
+    certificate, final_scale = find_start.do_the_fucking_ai_type_shit(d,SCALE_START, STEP, MAX_RECURSION_LIMIT)
+    list_of_final_scales.append(final_scale)
     cv2.imwrite("results/"+d+".jpg",certificate)
