@@ -22,4 +22,4 @@ Steps:
 (More automation and a GUI will be added after the base functionality is properly working)
 
 To be added:
-1. Auto sizescaling of text if it doesn't fit
+1. Probability analysis of output to be flagged for user to check for errors
