@@ -15,8 +15,6 @@ width_box = width
 print('width:  ', width)
 print('height: ', height)
 
-print("tor baba gay")
-
 def text_contour(x, y, w, h, col, scale, text):
     # centering the text in the rectangle
     blank = 255 * np.ones_like(certif, dtype=np.uint8)
