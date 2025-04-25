@@ -1,8 +1,7 @@
 import cv2
 import numpy as np
 import colours
-
-SCALE = 1
+import text_rec
 
 img = cv2.imread("1st_ref.png", cv2.IMREAD_COLOR)
 certif = cv2.imread("1st.png", cv2.IMREAD_COLOR)
@@ -21,7 +20,7 @@ def text_contour(x, y, w, h, col, scale, text):
     # centering the text in the rectangle
     blank = 255 * np.ones_like(certif, dtype=np.uint8)
     blank_cp = 255 * np.ones_like(certif, dtype=np.uint8)
-    font = cv2.FONT_HERSHEY_SIMPLEX
+    font = cv2.FONT_HERSHEY_TRIPLEX
     org = (x + w // 2, int(y + h / 1.2))
     fontScale = scale
     color = (0, 0, 0)
@@ -73,8 +72,9 @@ def center_test(x,y,w,h,col,scale, text_in):
             break
     return x,y,w,h,diff
 
-def do_all_the_fucking_work(name):
+def do_all_the_fucking_work(name, scale_trial):
     global width_box
+    SCALE = scale_trial
     img = cv2.imread("1st_ref.png", cv2.IMREAD_COLOR)
     certif = cv2.imread("1st.png", cv2.IMREAD_COLOR)
     # certif = cv2.resize(certif, (0, 0), fx=0.5, fy=0.5)
@@ -104,13 +104,15 @@ def do_all_the_fucking_work(name):
         diff = width
         counter = 0
         sc = SCALE
-        while abs(diff) > 10:
-            sc -= 0.05
-            x, y, w, h, diff = center_test(x, y, w, h, col=120, scale=sc, text_in = name)
-            print(sc)
+        # while abs(diff) > 10:
+        #     sc -= 0.05
+        #     x, y, w, h, diff = center_test(x, y, w, h, col=120, scale=sc, text_in=name)
+        #     print(sc)
+        x, y, w, h, diff = center_test(x, y, w, h, col=120, scale=sc, text_in=name)
         text, text_img = text_contour(x, y, w, h, col=255, scale=SCALE, text = name)
-        cv2.rectangle(certif, (text[0], text[1]), (text[2], text[3]), (150, 255, 150), 2)
-        cv2.rectangle(text_img, (text[0], text[1]), (text[2], text[3]), (150, 255, 150), 2)
+        # cv2.rectangle(certif, (text[0], text[1]), (text[2], text[3]), (255, 0, 0), 2)
+        # cv2.rectangle(certif, (x, y), (x + w, y + h), (0, 0, 255), 2)
+        # cv2.rectangle(certif, (text[0], text[1]), (text[2], text[3]), (0, 0, 255), 2)
         text_img = text_img[text[1] + 5:text[3] - 5, text[0] + 5:text[2] - 5]
         finder = cv2.cvtColor(text_img, cv2.COLOR_BGR2GRAY)
         ctrs, _ = cv2.findContours(image=finder, mode=cv2.RETR_TREE, method=cv2.CHAIN_APPROX_NONE)
@@ -122,9 +124,71 @@ def do_all_the_fucking_work(name):
                     certificate[text[1] + 5 + r, text[0] + 5 + c] = pnt
                 c += 1
             r += 1
-
-    # cv2.imshow(name, certificate)
-    # cv2.imshow(name+"_test", certif)
+    # cv2.imshow(name, text_img)
+    text_got = text_rec.get_text_from_img(certificate, text)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
-    return certificate
+    return certificate, text, text_got
+
+def get_precent_match(base, to_cpr):
+    l = len(base)
+    l2 = len(to_cpr)
+    if l == 0 or l2 == 0:
+        return 0
+    if 0.7 < l2/l < 1.3:
+        pass
+    else:
+        return 0
+    cnt = 0
+
+    chk_len = None
+    if l<l2:
+        chk_len = l
+    elif l>=l2:
+        chk_len = l2
+    for n in range(chk_len):
+        if to_cpr[n] == base[n]:
+            cnt += 1
+    percent_of_match = (cnt/l)*100
+    print("precent", percent_of_match)
+    return percent_of_match
+
+def do_the_fucking_ai_type_shit(name, scale_start, step, max_limit):
+    scale = scale_start
+    step = step
+    dir = 1 # 1 for increase, -1 for decrease
+
+    certificate_last = None
+    flipped = False
+
+    while True:
+        print("SCALE", scale)
+        try:
+            certificate, _, text_got = do_all_the_fucking_work(name, scale)
+        except:
+            scale += dir * step
+            continue
+        certificate_last = certificate
+        if get_precent_match(text_got, name)>=50:
+            if dir == 1:
+                while True:
+                    print("SCALE", scale)
+                    try:
+                        certificate, _, text_got = do_all_the_fucking_work(name, scale)
+                    except:
+                        scale += dir * step
+                        continue
+                    if get_precent_match(text_got, name)>70:
+                        scale += dir * step
+                        certificate_last = certificate
+                    else:
+                        break
+            break
+        elif scale > 0.2 and not flipped:
+            dir = -1
+        else:
+            dir = 1
+            flipped = True
+        scale += dir * step
+    print("SCALE FINAL", scale)
+    return certificate_last
