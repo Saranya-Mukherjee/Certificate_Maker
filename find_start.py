@@ -2,6 +2,8 @@ import cv2
 import numpy as np
 import colours
 
+SCALE = 1
+
 img = cv2.imread("1st_ref.png", cv2.IMREAD_COLOR)
 certif = cv2.imread("1st.png", cv2.IMREAD_COLOR)
 # certif = cv2.resize(certif, (0, 0), fx=0.5, fy=0.5)
@@ -96,17 +98,17 @@ def do_all_the_fucking_work(name):
         width_box = x+w//2
         print("hu", x, w, width_box)
         cv2.rectangle(certif, (x, y), (x + w, y + h), (150, 150, 150), 2)
-        text, _ = text_contour(x, y, w, h, col=0, scale=1, text = name)
+        text, _ = text_contour(x, y, w, h, col=0, scale=SCALE, text = name)
 
         cv2.rectangle(certif, (text[0], text[1]), (text[2], text[3]), (255, 255, 0), 2)
         diff = width
         counter = 0
-        sc = 1.05
+        sc = SCALE
         while abs(diff) > 10:
             sc -= 0.05
             x, y, w, h, diff = center_test(x, y, w, h, col=120, scale=sc, text_in = name)
             print(sc)
-        text, text_img = text_contour(x, y, w, h, col=255, scale=1, text = name)
+        text, text_img = text_contour(x, y, w, h, col=255, scale=SCALE, text = name)
         cv2.rectangle(certif, (text[0], text[1]), (text[2], text[3]), (150, 255, 150), 2)
         cv2.rectangle(text_img, (text[0], text[1]), (text[2], text[3]), (150, 255, 150), 2)
         text_img = text_img[text[1] + 5:text[3] - 5, text[0] + 5:text[2] - 5]
